@@ -1,0 +1,35 @@
+
+"use server";
+
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData
+) {
+  try {
+    const password = formData.get("password");
+    // For production, ADMIN_PASSWORD should be set in the .env file.
+    // We fall back to a default "password" for ease of development.
+    const adminPassword = process.env.ADMIN_PASSWORD || "password";
+
+    if (password === adminPassword) {
+      cookies().set("admin-session", "true", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+      // A redirect in a server action must be called outside of the try/catch block.
+      // This is a known issue in Next.js.
+    } else {
+      return "Incorrect password. Please try again.";
+    }
+  } catch (error) {
+    console.error("Authentication error:", error);
+    return "An unexpected error occurred. Please try again.";
+  }
+  // Redirect after a successful login.
+  redirect("/settings");
+}
