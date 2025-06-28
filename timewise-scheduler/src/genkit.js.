@@ -1,0 +1,6 @@
+import './src/ai/flows/store-user-details.ts';
+import './src/ai/flows/send-confirmation-email-flow.ts';
+import './src/ai/flows/get-available-slots-flow.ts';
+import './src/ai/flows/get-booked-slots-for-day-flow.ts';
+import './src/ai/flows/get-scheduler-settings-flow.ts';
+import './src/ai/flows/update-scheduler-settings-flow.ts';
