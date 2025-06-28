@@ -1,4 +1,3 @@
-
 'use server';
 
 import type { GaxiosError } from 'gaxios';
@@ -24,12 +23,11 @@ export async function createCalendarEvent({ name, email, bookingDate }: EventDet
 
     let eventDescription = `This is a booking confirmation for a meeting with ${name} (${email}).`;
 
-    // If a static meeting link is provided, add it to the description for visibility in the calendar event.
     if (staticHangoutLink) {
         eventDescription += `\n\nJoin the meeting here: ${staticHangoutLink}`;
     }
 
-    const event = {
+    const event: any = { // Use 'any' to dynamically add properties
         summary: `Drive by Talrop Booking: ${name}`,
         description: eventDescription,
         start: {
@@ -41,28 +39,35 @@ export async function createCalendarEvent({ name, email, bookingDate }: EventDet
             timeZone: 'UTC',
         },
         attendees: [{ email }],
-        conferenceData: staticHangoutLink ? undefined : {
-            createRequest: {
-                requestId: `drive-booking-${name}-${Date.now()}`,
-                conferenceSolutionKey: { type: 'hangoutsMeet' },
-            },
-        },
     };
+
+    // Only add video conferencing info if a static link is provided.
+    if (staticHangoutLink) {
+        event.conferenceData = {
+            entryPoints: [{
+                entryPointType: 'video',
+                uri: staticHangoutLink,
+                label: `Join meeting`,
+            }],
+        };
+        event.location = staticHangoutLink;
+    }
+
 
     try {
         const createdEvent = await calendar.events.insert({
             calendarId: calendarId,
             requestBody: event,
-            conferenceDataVersion: 1,
+            // By not including conferenceDataVersion, we prevent auto-creation of a Meet link
             sendNotifications: true,
         });
         
         const htmlLink = createdEvent.data.htmlLink;
-        const hangoutLink = staticHangoutLink || createdEvent.data.hangoutLink;
+        // The hangoutLink is ONLY the static link. It will be undefined if not set in .env.
+        const hangoutLink = staticHangoutLink;
 
         if (htmlLink) {
             console.log('Google Calendar event created successfully.');
-            // Return the htmlLink and the static hangoutLink from the .env file
             return { htmlLink, hangoutLink };
         } else {
             console.error('Event was created, but no htmlLink was returned. Full event data:', JSON.stringify(createdEvent.data, null, 2));
