@@ -7,17 +7,27 @@ This guide will walk you through deploying your application to Vercel and settin
 1.  **Go to Vercel:** Open your web browser and go to [vercel.com](https://vercel.com). Sign in with your GitHub account.
 2.  **Import Project:** On your Vercel dashboard, click the **"Add New..."** button and select **"Project"**.
 3.  **Import GitHub Repository:** Find your `drive-booking-system` repository in the list and click the **"Import"** button next to it.
-4.  **Configure Project:** Vercel will automatically detect that it's a Next.js project. You don't need to change any build settings. The most important part is adding the Environment Variables.
+4.  **Configure Project:** Vercel will automatically detect that it's a Next.js project. The most important part is adding the Environment Variables and ensuring the Root Directory is correct.
 
-## Step 2: Add Environment Variables in Vercel
+## Step 2: Set Correct Root Directory (Crucial for Vercel)
+
+If your build fails with an error like "No Next.js version detected", it's because the **Root Directory** is set incorrectly.
+
+1.  After importing your project, go to the project's **Settings** tab on Vercel.
+2.  Click on **Build & Deployment** in the left sidebar.
+3.  Scroll down to the **Root Directory** section.
+4.  Ensure the input box is **EMPTY**. If it has any text, delete it.
+5.  Click **Save**.
+
+![Vercel Build Settings](https://placehold.co/800x250.png)
+
+## Step 3: Add Environment Variables in Vercel
 
 Before you deploy, you must add your secret keys.
 
-1.  On the "Configure Project" screen, expand the **"Environment Variables"** section.
-2.  Add each of the variables below, one by one. Copy the **Name** and **Value** carefully.
+1.  On the "Configure Project" screen (or in "Settings" > "Environment Variables"), add each of the variables below, one by one.
+2.  Copy the **Name** and **Value** carefully. **Do not include any quotes in the value fields.**
 3.  **Crucially**, for the `GOOGLE_PRIVATE_KEY`, copy the *entire* key from your service account JSON file. It's a very long block of text that starts with `-----BEGIN PRIVATE KEY-----` and ends with `-----END PRIVATE KEY-----`.
-
-<img src="https://placehold.co/800x250.png" alt="Vercel Environment Variables" data-ai-hint="vercel environment variables" />
 
 ### Required Variables
 
@@ -34,8 +44,14 @@ Before you deploy, you must add your secret keys.
 | `SMTP_PASS`                   | Your email app password    | **Important:** Use an "App Password".              |
 | `SMTP_FROM_EMAIL`             | The "from" email address   | The email address that will send confirmations.    |
 
+### Optional Variables
 
-## Step 3: Deploy
+| Name                 | Value                      | Description                                                                 |
+| :------------------- | :------------------------- | :-------------------------------------------------------------------------- |
+| `GOOGLE_MEET_LINK`   | Your personal meeting link | A static Google Meet link. If not provided, no video call link will be added. |
+
+
+## Step 4: Deploy
 
 1.  After adding all the environment variables, click the **"Deploy"** button.
 2.  Vercel will build and deploy your project. This might take a few minutes.
